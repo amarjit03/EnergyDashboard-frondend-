@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - EnergyTracker</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .energy-particle {
+            position: absolute;
+            background: linear-gradient(45deg, #4CAF50, #2196F3);
+            border-radius: 50%;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .power-line {
+            position: absolute;
+            background: linear-gradient(90deg, rgba(255,255,255,0.1), rgba(255,255,255,0.3));
+            transform-origin: left center;
+        }
+
+        .grid-line {
+            position: absolute;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .login-card {
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .energy-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .energy-input:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .login-button {
+            background: linear-gradient(45deg, #4CAF50, #2196F3);
+            transition: all 0.3s ease;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.2); opacity: 0.3; }
+            100% { transform: scale(1); opacity: 0.6; }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        .neural-path {
+            stroke-dasharray: 1000;
+            animation: neural 3s linear infinite;
+        }
+
+        @keyframes neural {
+            0% { stroke-dashoffset: 1000; }
+            100% { stroke-dashoffset: 0; }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
+    <!-- Background Elements -->
+    <div id="grid" class="fixed inset-0 opacity-20"></div>
+    <div id="particles" class="fixed inset-0"></div>
+    <div id="powerLines" class="fixed inset-0"></div>
+
+    <!-- Navigation -->
+    <nav class="relative z-50 p-6">
+        <div class="container mx-auto">
+            <a href="/" class="flex items-center space-x-2 w-fit">
+                <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+                <span class="text-white text-xl font-bold">EnergyTracker</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Login Form -->
+    <div class="relative z-10 min-h-[calc(100vh-88px)] flex items-center justify-center p-6">
+        <div class="login-card max-w-md w-full rounded-xl shadow-2xl overflow-hidden">
+            <!-- Login Header -->
+            <div class="p-8 text-center">
+                <div class="mb-6">
+                    <svg class="w-48 h-48 mx-auto text-green-400" viewBox="0 0 200 200" fill="none">
+                        <g class="neural-network">
+                            <circle cx="100" cy="50" r="5" fill="currentColor"/>
+                            <circle cx="60" cy="100" r="5" fill="currentColor"/>
+                            <circle cx="140" cy="100" r="5" fill="currentColor"/>
+                            <circle cx="100" cy="150" r="5" fill="currentColor"/>
+                            
+                            <path class="neural-path" d="M100 55L60 95M100 55L140 95M60 105L100 145M140 105L100 145" 
+                                stroke="currentColor" stroke-width="2"/>
+                            
+                            <circle cx="100" cy="100" r="40" stroke="currentColor" stroke-width="2" 
+                                stroke-dasharray="10,5" class="pulse"/>
+                        </g>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-white mb-2">Welcome Back</h2>
+                <p class="text-gray-300">Access your AI-powered energy dashboard</p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="p-8 pt-0">
+                <div class="space-y-6">
+                    <!-- Email Input -->
+                    <div class="space-y-2">
+                        <label class="block text-gray-300" for="email">Email</label>
+                        <div class="relative">
+                            <input 
+                                type="email" 
+                                id="email" 
+                                name="email"
+                                class="energy-input w-full px-4 py-3 rounded-lg text-white placeholder-gray-400 focus:outline-none"
+                                placeholder="Enter your email"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Password Input -->
+                    <div class="space-y-2">
+                        <label class="block text-gray-300" for="password">Password</label>
+                        <div class="relative">
+                            <input 
+                                type="password" 
+                                id="password" 
+                                name="password"
+                                class="energy-input w-full px-4 py-3 rounded-lg text-white placeholder-gray-400 focus:outline-none"
+                                placeholder="Enter your password"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Remember Me & Forgot Password -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <input 
+                                type="checkbox" 
+                                id="remember" 
+                                name="remember"
+                                class="form-checkbox h-4 w-4 text-green-400"
+                            >
+                            <label class="ml-2 text-sm text-gray-300" for="remember">
+                                Remember me
+                            </label>
+                        </div>
+                        <a href="/forgot-password" class="text-sm text-green-400 hover:text-green-300">
+                            Forgot password?
+                        </a>
+                    </div>
+
+                    <!-- Login Button -->
+                    <button 
+                        type="submit" 
+                        class="login-button w-full py-3 rounded-lg text-white font-semibold"
+                    >
+                        Login
+                    </button>
+
+                    <!-- Register Link -->
+                    <p class="text-center text-gray-300">
+                        Don't have an account? 
+                        <a href="/register" class="text-green-400 hover:text-green-300">Register here</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Background animation functions
+        function createGrid() {
+            const grid = document.getElementById('grid');
+            const gridSize = 50;
+            
+            for(let i = 0; i < window.innerWidth; i += gridSize) {
+                const verticalLine = document.createElement('div');
+                verticalLine.className = 'grid-line';
+                verticalLine.style.width = '1px';
+                verticalLine.style.height = '100%';
+                verticalLine.style.left = `${i}px`;
+                grid.appendChild(verticalLine);
+            }
+            
+            for(let i = 0; i < window.innerHeight; i += gridSize) {
+                const horizontalLine = document.createElement('div');
+                horizontalLine.className = 'grid-line';
+                horizontalLine.style.height = '1px';
+                horizontalLine.style.width = '100%';
+                horizontalLine.style.top = `${i}px`;
+                grid.appendChild(horizontalLine);
+            }
+        }
+
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 15;
+            
+            for(let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'energy-particle pulse';
+                const size = Math.random() * 20 + 10;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        function createPowerLines() {
+            const linesContainer = document.getElementById('powerLines');
+            const lineCount = 8;
+            
+            for(let i = 0; i < lineCount; i++) {
+                const line = document.createElement('div');
+                line.className = 'power-line';
+                const top = Math.random() * 100;
+                const width = Math.random() * 200 + 100;
+                const height = Math.random() * 2 + 1;
+                
+                line.style.top = `${top}%`;
+                line.style.width = `${width}px`;
+                line.style.height = `${height}px`;
+                
+                gsap.to(line, {
+                    x: window.innerWidth + 100,
+                    duration: Math.random() * 3 + 2,
+                    repeat: -1,
+                    ease: "none",
+                    delay: Math.random() * 2
+                });
+                
+                linesContainer.appendChild(line);
+            }
+        }
+
+        // Form handling
+        const loginForm = document.getElementById('loginForm');
+        const inputs = document.querySelectorAll('.energy-input');
+
+        // Show loading state
+        function setLoadingState(isLoading) {
+            const button = loginForm.querySelector('button[type="submit"]');
+            if (isLoading) {
+                button.disabled = true;
+                button.innerHTML = `
+                    <svg class="animate-spin h-5 w-5 mr-3 inline" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Logging in...
+                `;
+            } else {
+                button.disabled = false;
+                button.textContent = 'Login';
+            }
+        }
+
+        // Form submission
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            setLoadingState(true);
+
+            try {
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // Redirect to dashboard
+                window.location.href = '/dashboard';
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('Invalid email or password. Please try again.');
+            } finally {
+                setLoadingState(false);
+            }
+        });
+
+        // Password visibility toggle
+        function addPasswordToggle(passwordInput) {
+            const toggleButton = document.createElement('button');
+            toggleButton.type = 'button';
+            toggleButton.className = 'absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white';
+            toggleButton.innerHTML = `
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path class="eye-open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path class="eye-open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    <path class="eye-closed hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                </svg>
+            `;
+
+            passwordInput.parentElement.style.position = 'relative';
+            passwordInput.parentElement.appendChild(toggleButton);
+
+            toggleButton.addEventListener('click', () => {
+                const type = passwordInput.type === 'password' ? 'text' : 'password';
+                passwordInput.type = type;
+                
+                const eyeOpen = toggleButton.querySelector('.eye-open');
+                const eyeClosed = toggleButton.querySelector('.eye-closed');
+                eyeOpen.classList.toggle('hidden');
+                eyeClosed.classList.toggle('hidden');
+            });
+        }
+
+        // Initialize everything
+        function init() {
+            createGrid();
+            createParticles();
+            createPowerLines();
+            
+            // Add password visibility toggle
+            addPasswordToggle(document.getElementById('password'));
+
+            // Animate form entrance
+            gsap.from('.login-card', {
+                y: 30,
+                opacity: 0,
+                duration: 1,
+                ease: 'power3.out'
+            });
+
+            // Animate inputs on focus
+            inputs.forEach(input => {
+                input.addEventListener('focus', () => {
+                    gsap.to(input, {
+                        scale: 1.02,
+                        duration: 0.2
+                    });
+                });
+
+                input.addEventListener('blur', () => {
+                    gsap.to(input, {
+                        scale: 1,
+                        duration: 0.2
+                    });
+                });
+            });
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            createGrid();
+        });
+
+        // Start animations when the page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

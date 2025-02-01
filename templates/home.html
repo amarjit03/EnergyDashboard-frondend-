@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Dashboard Background</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .energy-particle {
+            position: absolute;
+            background: linear-gradient(45deg, #4CAF50, #2196F3);
+            border-radius: 50%;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .power-line {
+            position: absolute;
+            background: linear-gradient(90deg, rgba(255,255,255,0.1), rgba(255,255,255,0.3));
+            transform-origin: left center;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .grid-line {
+            position: absolute;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.2); opacity: 0.3; }
+            100% { transform: scale(1); opacity: 0.6; }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 overflow-hidden relative">
+    <!-- Grid Background -->
+    <div id="grid" class="absolute inset-0 opacity-20"></div>
+    
+    <!-- Floating Energy Orbs -->
+    <div id="particles" class="absolute inset-0"></div>
+    
+    <!-- Power Lines -->
+    <div id="powerLines" class="absolute inset-0"></div>
+
+    <!-- Content Container (where Flask content would go) -->
+    <div id="content" class="relative z-10 container mx-auto p-8">
+        <!-- Flask content would be inserted here -->
+    </div>
+
+    <script>
+        // Create grid background
+        function createGrid() {
+            const grid = document.getElementById('grid');
+            const gridSize = 50;
+            
+            for(let i = 0; i < window.innerWidth; i += gridSize) {
+                const verticalLine = document.createElement('div');
+                verticalLine.className = 'grid-line';
+                verticalLine.style.width = '1px';
+                verticalLine.style.height = '100%';
+                verticalLine.style.left = `${i}px`;
+                grid.appendChild(verticalLine);
+            }
+            
+            for(let i = 0; i < window.innerHeight; i += gridSize) {
+                const horizontalLine = document.createElement('div');
+                horizontalLine.className = 'grid-line';
+                horizontalLine.style.height = '1px';
+                horizontalLine.style.width = '100%';
+                horizontalLine.style.top = `${i}px`;
+                grid.appendChild(horizontalLine);
+            }
+        }
+
+        // Create floating energy particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 15;
+            
+            for(let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'energy-particle pulse';
+                
+                // Random size between 10 and 30 pixels
+                const size = Math.random() * 20 + 10;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Random position
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                
+                // Add floating animation with random duration
+                particle.style.animation = `float ${Math.random() * 3 + 2}s infinite ease-in-out`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Create animated power lines
+        function createPowerLines() {
+            const linesContainer = document.getElementById('powerLines');
+            const lineCount = 8;
+            
+            for(let i = 0; i < lineCount; i++) {
+                const line = document.createElement('div');
+                line.className = 'power-line';
+                
+                // Random position and size
+                const top = Math.random() * 100;
+                const width = Math.random() * 200 + 100;
+                const height = Math.random() * 2 + 1;
+                
+                line.style.top = `${top}%`;
+                line.style.width = `${width}px`;
+                line.style.height = `${height}px`;
+                
+                // Animate with GSAP
+                gsap.to(line, {
+                    x: window.innerWidth + 100,
+                    duration: Math.random() * 3 + 2,
+                    repeat: -1,
+                    ease: "none",
+                    delay: Math.random() * 2
+                });
+                
+                linesContainer.appendChild(line);
+            }
+        }
+
+        // Initialize everything
+        function init() {
+            createGrid();
+            createParticles();
+            createPowerLines();
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            createGrid();
+        });
+
+        // Start the animations when the page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

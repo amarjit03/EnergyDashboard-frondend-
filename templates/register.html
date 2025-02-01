@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - EnergyTracker</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .energy-particle {
+            position: absolute;
+            background: linear-gradient(45deg, #4CAF50, #2196F3);
+            border-radius: 50%;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .power-line {
+            position: absolute;
+            background: linear-gradient(90deg, rgba(255,255,255,0.1), rgba(255,255,255,0.3));
+            transform-origin: left center;
+        }
+
+        .grid-line {
+            position: absolute;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .register-card {
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .energy-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .energy-input:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .register-button {
+            background: linear-gradient(45deg, #4CAF50, #2196F3);
+            transition: all 0.3s ease;
+        }
+
+        .register-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.2); opacity: 0.3; }
+            100% { transform: scale(1); opacity: 0.6; }
+        }
+
+        .neural-path {
+            stroke-dasharray: 1000;
+            animation: neural 3s linear infinite;
+        }
+
+        @keyframes neural {
+            0% { stroke-dashoffset: 1000; }
+            100% { stroke-dashoffset: 0; }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
+    <!-- Background Elements -->
+    <div id="grid" class="fixed inset-0 opacity-20"></div>
+    <div id="particles" class="fixed inset-0"></div>
+    <div id="powerLines" class="fixed inset-0"></div>
+
+    <!-- Navigation -->
+    <nav class="relative z-50 p-6">
+        <div class="container mx-auto">
+            <a href="/" class="flex items-center space-x-2 w-fit">
+                <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+                <span class="text-white text-xl font-bold">EnergyTracker</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Registration Form -->
+    <div class="relative z-10 min-h-[calc(100vh-88px)] flex items-center justify-center p-6">
+        <div class="register-card max-w-4xl w-full rounded-xl shadow-2xl overflow-hidden">
+            <div class="flex flex-col md:flex-row">
+                <!-- Left Side - AI Animation -->
+                <div class="w-full md:w-5/12 bg-gray-900 bg-opacity-50 p-8 flex items-center justify-center">
+                    <div class="text-center">
+                        <svg class="w-48 h-48 mx-auto text-green-400" viewBox="0 0 200 200" fill="none">
+                            <g class="neural-network">
+                                <circle cx="100" cy="50" r="5" fill="currentColor"/>
+                                <circle cx="60" cy="100" r="5" fill="currentColor"/>
+                                <circle cx="140" cy="100" r="5" fill="currentColor"/>
+                                <circle cx="100" cy="150" r="5" fill="currentColor"/>
+                                <path class="neural-path" d="M100 55L60 95M100 55L140 95M60 105L100 145M140 105L100 145" 
+                                    stroke="currentColor" stroke-width="2"/>
+                                <circle cx="100" cy="100" r="40" stroke="currentColor" stroke-width="2" 
+                                    stroke-dasharray="10,5" class="pulse"/>
+                            </g>
+                        </svg>
+                        <h3 class="text-xl font-bold text-white mb-4">AI-Powered Analytics</h3>
+                        <p class="text-gray-300">Join our platform and harness the power of artificial intelligence to optimize your energy consumption.</p>
+                    </div>
+                </div>
+
+                <!-- Right Side - Registration Form -->
+                <div class="w-full md:w-7/12 p-8">
+                    <div class="mb-8 text-center">
+                        <h2 class="text-2xl font-bold text-white mb-2">Create Your Account</h2>
+                        <p class="text-gray-300">Start your journey to smarter energy management</p>
+                    </div>
+
+                    <form id="registerForm" class="space-y-6">
+                        <!-- Full Name -->
+                        <div class="space-y-2">
+                            <label class="block text-gray-300" for="fullName">Full Name</label>
+                            <input 
+                                type="text" 
+                                id="fullName" 
+                                name="fullName"
+                                class="energy-input w-full px-4 py-3 rounded-lg text-white placeholder-gray-400 focus:outline-none"
+                                placeholder="Enter your full name"
+                                required
+                            >
+                        </div>
+
+                        <!-- Email -->
+                        <div class="space-y-2">
+                            <label class="block text-gray-300" for="email">Email</label>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                name="email"
+                                class="energy-input w-full px-4 py-3 rounded-lg text-white placeholder-gray-400 focus:outline-none"
+                                placeholder="Enter your email"
+                                required
+                            >
+                        </div>
+
+                        <!-- Password -->
+                        <div class="space-y-2">
+                            <label class="block text-gray-300" for="password">Password</label>
+                            <div class="relative">
+                                <input 
+                                    type="password" 
+                                    id="password" 
+                                    name="password"
+                                    class="energy-input w-full px-4 py-3 rounded-lg text-white placeholder-gray-400 focus:outline-none"
+                                    placeholder="Create a password"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="space-y-2">
+                            <label class="block text-gray-300" for="confirmPassword">Confirm Password</label>
+                            <div class="relative">
+                                <input 
+                                    type="password" 
+                                    id="confirmPassword" 
+                                    name="confirmPassword"
+                                    class="energy-input w-full px-4 py-3 rounded-lg text-white placeholder-gray-400 focus:outline-none"
+                                    placeholder="Confirm your password"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Terms and AI Notice -->
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <input 
+                                    type="checkbox" 
+                                    id="terms" 
+                                    name="terms"
+                                    class="mt-1 form-checkbox h-4 w-4 text-green-400"
+                                    required
+                                >
+                                <label class="ml-2 text-sm text-gray-300">
+                                    I agree to the <a href="#" class="text-green-400 hover:text-green-300">Terms of Service</a> and 
+                                    <a href="#" class="text-green-400 hover:text-green-300">Privacy Policy</a>
+                                </label>
+                            </div>
+
+                            <div class="flex items-start">
+                                <input 
+                                    type="checkbox" 
+                                    id="aiConsent" 
+                                    name="aiConsent"
+                                    class="mt-1 form-checkbox h-4 w-4 text-green-400"
+                                    required
+                                >
+                                <label class="ml-2 text-sm text-gray-300">
+                                    I understand that this platform uses AI to analyze energy data and provide recommendations
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Register Button -->
+                        <button 
+                            type="submit" 
+                            class="register-button w-full py-3 rounded-lg text-white font-semibold"
+                        >
+                            Create Account
+                        </button>
+
+                        <!-- Login Link -->
+                        <p class="text-center text-gray-300">
+                            Already have an account? 
+                            <a href="/login" class="text-green-400 hover:text-green-300">Login here</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/static/js/register.js"></script>
+</body>
+</html>

@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EnergyTracker - AI-Powered Energy Monitoring</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .energy-particle {
+            position: absolute;
+            background: linear-gradient(45deg, #4CAF50, #2196F3);
+            border-radius: 50%;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .power-line {
+            position: absolute;
+            background: linear-gradient(90deg, rgba(255,255,255,0.1), rgba(255,255,255,0.3));
+            transform-origin: left center;
+        }
+
+        .grid-line {
+            position: absolute;
+            background: rgba(255,255,255,0.1);
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.2); opacity: 0.3; }
+            100% { transform: scale(1); opacity: 0.6; }
+        }
+
+        .feature-card {
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .nav-button {
+            background: linear-gradient(45deg, #4CAF50, #2196F3);
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+        }
+
+        @keyframes neural {
+            0% { stroke-dashoffset: 1000; }
+            100% { stroke-dashoffset: 0; }
+        }
+
+        .neural-path {
+            stroke-dasharray: 1000;
+            animation: neural 3s linear infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 overflow-x-hidden">
+    <!-- Background Elements -->
+    <div id="grid" class="fixed inset-0 opacity-20"></div>
+    <div id="particles" class="fixed inset-0"></div>
+    <div id="powerLines" class="fixed inset-0"></div>
+
+    <!-- Navigation -->
+    <nav class="relative z-50 p-6">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+                <span class="text-white text-xl font-bold">EnergyTracker</span>
+            </div>
+            <div class="space-x-4">
+                <a href="/login" class="nav-button px-6 py-2 rounded-full text-white font-semibold">Login</a>
+                <a href="/register" class="nav-button px-6 py-2 rounded-full text-white font-semibold">Register</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative z-10 min-h-screen flex items-center">
+        <div class="container mx-auto px-6 py-24">
+            <div class="text-center max-w-4xl mx-auto">
+                <div class="inline-flex items-center px-4 py-2 rounded-full bg-green-400 bg-opacity-20 text-green-400 mb-6">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                    </svg>
+                    AI-Powered Analytics
+                </div>
+                <h1 class="text-5xl md:text-6xl font-bold text-white mb-8">Intelligent Energy Monitoring</h1>
+                <p class="text-xl text-gray-300 mb-12">Harness the power of artificial intelligence to optimize your energy consumption and reduce costs.</p>
+                <div class="space-x-6">
+                    <a href="/register" class="nav-button text-xl px-8 py-4 rounded-full text-white font-bold inline-block">Start Saving Today</a>
+                    <a href="#learn-more" class="px-8 py-4 rounded-full text-white font-bold inline-block border-2 border-white hover:bg-white hover:text-gray-900 transition-colors">Learn More</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Features Section -->
+    <section id="learn-more" class="relative z-10 py-24 bg-black bg-opacity-30">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row items-center gap-12">
+                <!-- AI Animation -->
+                <div class="w-full md:w-1/2">
+                    <div class="feature-card p-8 rounded-xl">
+                        <svg class="w-full h-64 text-green-400" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g class="neural-network">
+                                <circle cx="100" cy="50" r="5" fill="currentColor"/>
+                                <circle cx="60" cy="100" r="5" fill="currentColor"/>
+                                <circle cx="140" cy="100" r="5" fill="currentColor"/>
+                                <circle cx="100" cy="150" r="5" fill="currentColor"/>
+                                
+                                <path class="neural-path" d="M100 55L60 95M100 55L140 95M60 105L100 145M140 105L100 145" 
+                                    stroke="currentColor" stroke-width="2"/>
+                                
+                                <circle cx="100" cy="100" r="40" stroke="currentColor" stroke-width="2" 
+                                    stroke-dasharray="10,5" class="pulse"/>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+                
+                <!-- AI Information -->
+                <div class="w-full md:w-1/2 text-white">
+                    <h2 class="text-4xl font-bold mb-8">Powered by AI</h2>
+                    <p class="text-xl text-gray-300 mb-6">Our advanced artificial intelligence system works 24/7 to help you understand and optimize your energy usage.</p>
+                    
+                    <div class="space-y-6">
+                        <div class="feature-card p-4 rounded-lg">
+                            <div class="flex items-start space-x-4">
+                                <svg class="w-6 h-6 text-green-400 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                </svg>
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-2">Real-time Analysis</h3>
+                                    <p class="text-gray-300">Continuous monitoring and instant insights into your energy consumption patterns.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="feature-card p-4 rounded-lg">
+                            <div class="flex items-start space-x-4">
+                                <svg class="w-6 h-6 text-green-400 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                </svg>
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-2">Predictive Analytics</h3>
+                                    <p class="text-gray-300">AI-driven forecasting helps you anticipate and optimize future energy needs.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="feature-card p-4 rounded-lg">
+                            <div class="flex items-start space-x-4">
+                                <svg class="w-6 h-6 text-green-400 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-2">Smart Recommendations</h3>
+                                    <p class="text-gray-300">Personalized suggestions for improving energy efficiency and reducing costs.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section class="relative z-10 py-24">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-white text-center mb-16">Comprehensive Energy Management</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Usage Monitoring -->
+                <div class="feature-card p-8 rounded-xl text-white">
+                    <svg class="w-12 h-12 text-green-400 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    <h3 class="text-xl font-bold mb-4">Usage Monitoring</h3>
+                    <p class="text-gray-300">Track consumption patterns and identify usage trends with detailed analytics.</p>
+                </div>
+
+                <!-- Cost Analysis -->
+                <div class="feature-card p-8 rounded-xl text-white">
+                    <svg class="w-12 h-12 text-green-400 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <h3 class="text-xl font-bold mb-4">Cost Analysis</h3>
+                    <p class="text-gray-300">Understand your energy expenses and identify opportunities for savings.</p>
+                </div>
+
+                <!-- Smart Alerts -->
+                <div class="feature-card p-8 rounded-xl text-white">
+                    <svg class="w-12 h-12 text-green-400 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                    </svg>
+                    <h3 class="text-xl font-bold mb-4">Smart Alerts</h3>
+                    <p class="text-gray-300">Receive AI-powered notifications about anomalies and optimization opportunities.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="relative z-10 py-24 bg-black bg-opacity-30">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-white text-center mb-16">How It Works</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Step 1 -->
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-green-400 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-2xl font-bold text-gray-900">1</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-4">Connect</h3>
+                    <p class="text-gray-300">Link your energy meters to our platform</p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-green-400 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-2xl font-bold text-gray-900">2</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-4">Monitor</h3>
+                    <p class="text-gray-300">Track your energy usage in real-time</p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-green-400 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-2xl font-bold text-gray-900">3</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-4">Analyze</h3>
+                    <p class="text-gray-300">Get AI-powered insights and recommendations</p>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-green-400 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-2xl font-bold text-gray-900">4</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-4">Optimize</h3>
+                    <p class="text-gray-300">Implement changes and save money</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Transparency Notice -->
+    <section class="relative z-10 py-16">
+        <div class="container mx-auto px-6">
+            <div class="feature-card p-8 rounded-xl max-w-3xl mx-auto">
+                <div class="flex items-start space-x-4">
+                    <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                    </svg>
+                    <div>
+                        <h3 class="text-xl font-bold text-white mb-4">AI Transparency</h3>
+                        <p class="text-gray-300 mb-4">
+                            Our platform uses artificial intelligence to analyze your energy consumption patterns and provide personalized recommendations. We believe in complete transparency about how AI is used in our service:
+                        </p>
+                        <ul class="list-disc list-inside text-gray-300 space-y-2 mb-4">
+                            <li>All analysis is performed securely on our servers</li>
+                            <li>You maintain full control over your data and AI features</li>
+                            <li>AI recommendations are suggestions that you can choose to implement</li>
+                            <li>You can adjust AI settings and preferences at any time</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="relative z-10 py-24 bg-black bg-opacity-30">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-4xl font-bold text-white mb-8">Ready to Optimize Your Energy Usage?</h2>
+            <p class="text-xl text-gray-300 mb-12 max-w-2xl mx-auto">Join thousands of users who are already saving energy and reducing costs with our AI-powered platform.</p>
+            <div class="space-x-6">
+                <a href="/register" class="nav-button px-8 py-4 rounded-full text-white font-bold inline-block">Get Started Now</a>
+                <a href="/login" class="px-8 py-4 rounded-full text-white font-bold inline-block border-2 border-white hover:bg-white hover:text-gray-900 transition-colors">Login</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="relative z-10 py-12 bg-black bg-opacity-50">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center space-x-2 mb-4 md:mb-0">
+                    <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    <span class="text-white text-lg font-bold">EnergyTracker</span>
+                </div>
+                <div class="text-gray-400 text-sm">
+                    © 2024 EnergyTracker. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- AI Information Modal -->
+    <div id="aiModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+        <div class="relative min-h-screen flex items-center justify-center p-4">
+            <div class="feature-card bg-gray-900 p-8 rounded-xl max-w-lg w-full">
+                <!-- Modal content here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize GSAP ScrollTrigger
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Background animation functions
+        function createGrid() {
+            const grid = document.getElementById('grid');
+            const gridSize = 50;
+            
+            for(let i = 0; i < window.innerWidth; i += gridSize) {
+                const verticalLine = document.createElement('div');
+                verticalLine.className = 'grid-line';
+                verticalLine.style.width = '1px';
+                verticalLine.style.height = '100%';
+                verticalLine.style.left = `${i}px`;
+                grid.appendChild(verticalLine);
+            }
+            
+            for(let i = 0; i < window.innerHeight; i += gridSize) {
+                const horizontalLine = document.createElement('div');
+                horizontalLine.className = 'grid-line';
+                horizontalLine.style.height = '1px';
+                horizontalLine.style.width = '100%';
+                horizontalLine.style.top = `${i}px`;
+                grid.appendChild(horizontalLine);
+            }
+        }
+
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 15;
+            
+            for(let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'energy-particle pulse';
+                const size = Math.random() * 20 + 10;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.animation = `float ${Math.random() * 3 + 2}s infinite ease-in-out`;
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        function createPowerLines() {
+            const linesContainer = document.getElementById('powerLines');
+            const lineCount = 8;
+            
+            for(let i = 0; i < lineCount; i++) {
+                const line = document.createElement('div');
+                line.className = 'power-line';
+                const top = Math.random() * 100;
+                const width = Math.random() * 200 + 100;
+                const height = Math.random() * 2 + 1;
+                
+                line.style.top = `${top}%`;
+                line.style.width = `${width}px`;
+                line.style.height = `${height}px`;
+                
+                gsap.to(line, {
+                    x: window.innerWidth + 100,
+                    duration: Math.random() * 3 + 2,
+                    repeat: -1,
+                    ease: "none",
+                    delay: Math.random() * 2
+                });
+                
+                linesContainer.appendChild(line);
+            }
+        }
+
+        // Initialize everything
+        function init() {
+            createGrid();
+            createParticles();
+            createPowerLines();
+
+            // Animate sections on scroll
+            gsap.utils.toArray('.feature-card').forEach(card => {
+                gsap.from(card, {
+                    scrollTrigger: {
+                        trigger: card,
+                        start: 'top 80%',
+                        toggleActions: 'play none none reverse'
+                    },
+                    y: 50,
+                    opacity: 0,
+                    duration: 1
+                });
+            });
+
+            // Animate hero content
+            gsap.from('.hero-content', {
+                y: 30,
+                opacity: 0,
+                duration: 1,
+                delay: 0.5,
+                ease: 'power3.out'
+            });
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            createGrid();
+        });
+
+        // Start animations when the page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
